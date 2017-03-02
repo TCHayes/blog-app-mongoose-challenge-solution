@@ -1,7 +1,9 @@
+const {BasicStrategy} = require('passport-http');
 const bodyParser = require('body-parser');
 const express = require('express');
 const mongoose = require('mongoose');
 const morgan = require('morgan');
+const passport = require('passport');
 
 const {DATABASE_URL, PORT} = require('./config');
 const {BlogPost, User} = require('./models');
@@ -17,8 +19,8 @@ app.use('/users/', router);
 mongoose.Promise = global.Promise;
 
 const basicStrategy = new BasicStrategy(
-  let user;
   (username, password, callback) => {
+    let user;
     User
       .findOne({username})
       .exec()
@@ -66,7 +68,8 @@ app.get('/posts/:id', (req, res) => {
     });
 });
 
-app.post('/posts', (req, res) => {
+app.post('/posts', passport.authenticate('basic', {session: false}),
+  (req, res) => {
   const requiredFields = ['title', 'content', 'author'];
   for (let i=0; i<requiredFields.length; i++) {
     const field = requiredFields[i];
