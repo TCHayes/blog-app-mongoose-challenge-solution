@@ -9,6 +9,25 @@ const router = express.Router();
 
 router.use(jsonParser);
 
+// const strategy = new BasicStrategy(
+//   (username, password, callback) => {
+//     User
+//       .findOne({username})
+//       .exec()
+//       .then(user => {
+//         if (!user) {
+//           return callback(null, false, "Incorrect username");
+//         }
+//         if (user.password != password) {
+//           return callback(null, false, "Incorrect password");
+//         }
+//         return callback(null, user);
+//       })
+//       .catch(err => callback(err))
+// });
+//
+// passport.use(strategy);
+
 router.post('/', (req, res) => {
   if(!req.body) {
     return res.status(400).json({message: 'No request body'});
@@ -44,7 +63,6 @@ router.post('/', (req, res) => {
   if (password === '') {
     return res.status(422).json({message: 'Incorrect field length: password'});
   }
-console.log('user: ' + typeof username);
   return User
     .find({username})
     .count()
@@ -56,8 +74,6 @@ console.log('user: ' + typeof username);
       return User.hashPassword(password)
     })
     .then(hash => {
-      console.log('return user');
-      console.log(username);
       return User
         .create({
           username: username,
@@ -67,7 +83,6 @@ console.log('user: ' + typeof username);
         })
     })
     .then(user => {
-      console.log("Hello");
       return res.status(201).json(user.apiRepr());
     })
     .catch(err => {
@@ -75,5 +90,14 @@ console.log('user: ' + typeof username);
       res.status(500).json({message: 'Internal server error'});
     });
 });
+
+router.get('/', (req, res) => {
+  return User
+    .find()
+    .exec()
+    .then(users => res.json(users.map(user => user.apiRepr())))
+    .catch(err => console.error(err) &&  res.status(500).json({message: 'Internal server error'}));
+})
+
 
 module.exports = {router};
