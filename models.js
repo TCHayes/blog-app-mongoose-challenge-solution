@@ -1,4 +1,7 @@
+const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
 
 const blogPostSchema = mongoose.Schema({
   author: {
@@ -25,7 +28,7 @@ blogPostSchema.methods.apiRepr = function() {
   };
 }
 const userSchema = mongoose.Schema({
-  username: {type:String, unique:true, required: true},
+  username: {type:String, required: true, unique:true},
   password: {type:String, required:true},
   firstName: {type:String, default: ""},
   lastName: {type:String, default: ""}
@@ -33,7 +36,8 @@ const userSchema = mongoose.Schema({
 
 userSchema.methods.apiRepr = function() {
   return {
-    username: this.userSchema,
+    id: this._id,
+    username: this.username,
     firstName: this.firstName,
     lastName: this.lastName
   };
@@ -44,6 +48,7 @@ userSchema.methods.validatePassword = function(password) {
 }
 
 userSchema.statics.hashPassword = function(password) {
+  console.log("hashing pw");
   return bcrypt.hash(password, 12);
 }
 

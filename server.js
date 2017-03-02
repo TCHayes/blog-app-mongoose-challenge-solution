@@ -4,12 +4,15 @@ const mongoose = require('mongoose');
 const morgan = require('morgan');
 
 const {DATABASE_URL, PORT} = require('./config');
-const {BlogPost} = require('./models');
+const {BlogPost, User} = require('./models');
+const {router} = require('./router');
 
 const app = express();
 
 app.use(morgan('common'));
 app.use(bodyParser.json());
+
+app.use('/users/', router);
 
 mongoose.Promise = global.Promise;
 
