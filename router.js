@@ -9,25 +9,6 @@ const router = express.Router();
 
 router.use(jsonParser);
 
-// const strategy = new BasicStrategy(
-//   (username, password, callback) => {
-//     User
-//       .findOne({username})
-//       .exec()
-//       .then(user => {
-//         if (!user) {
-//           return callback(null, false, "Incorrect username");
-//         }
-//         if (user.password != password) {
-//           return callback(null, false, "Incorrect password");
-//         }
-//         return callback(null, user);
-//       })
-//       .catch(err => callback(err))
-// });
-//
-// passport.use(strategy);
-
 router.post('/', (req, res) => {
   if(!req.body) {
     return res.status(400).json({message: 'No request body'});
@@ -98,6 +79,5 @@ router.get('/', (req, res) => {
     .then(users => res.json(users.map(user => user.apiRepr())))
     .catch(err => console.error(err) &&  res.status(500).json({message: 'Internal server error'}));
 })
-
 
 module.exports = {router};

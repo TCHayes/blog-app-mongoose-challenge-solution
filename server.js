@@ -16,6 +16,31 @@ app.use('/users/', router);
 
 mongoose.Promise = global.Promise;
 
+const basicStrategy = new BasicStrategy(
+  let user;
+  (username, password, callback) => {
+    User
+      .findOne({username})
+      .exec()
+      .then(_user => {
+        user = _user;
+        if (!user) {
+          return callback(null, false, "Incorrect username");
+        }
+        return user.validatePassword(password);
+      })
+      .then(isValid => {
+        if (!isValid) {
+          return callback(null, false, "Incorrect password");
+        }
+        else {
+          return callback(null, user);
+        }
+      });
+});
+
+passport.use(basicStrategy);
+app.use(passport.initialize());
 
 app.get('/posts', (req, res) => {
   BlogPost
