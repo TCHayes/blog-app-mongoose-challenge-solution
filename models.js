@@ -24,7 +24,31 @@ blogPostSchema.methods.apiRepr = function() {
     created: this.created
   };
 }
+const userSchema = mongoose.Schema({
+  username: {type:String, unique:true, required: true},
+  password: {type:String, required:true},
+  firstName: {type:String, default: ""},
+  lastName: {type:String, default: ""}
+});
+
+userSchema.methods.apiRepr = function() {
+  return {
+    username: this.userSchema,
+    firstName: this.firstName,
+    lastName: this.lastName
+  };
+}
+
+userSchema.methods.validatePassword = function(password) {
+  return bcrypt.compare(password, this.password);
+}
+
+userSchema.statics.hashPassword = function(password) {
+  return bcrypt.hash(password, 12);
+}
+
 
 const BlogPost = mongoose.model('BlogPost', blogPostSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = {BlogPost};
